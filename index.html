@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <title>Kaspi.kz</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+  <!-- START: modal for QR -->
+  <div id="qrOverlay" class="qr-overlay" aria-hidden="true">
+    <div class="qr-backdrop" id="qrBackdrop"></div>
+
+    <div class="qr-sheet" role="dialog" aria-modal="true" aria-label="Удостоверение личности">
+      <button class="qr-close" id="qrClose" aria-label="Закрыть">&times;</button>
+
+      <div class="qr-sheet-header">
+        <h2>Удостоверение личности</h2>
+      </div>
+
+      <div class="qr-sheet-body">
+        <p class="qr-instruction">Покажите QR-код сотруднику</p>
+
+        <div class="qr-image-wrap">
+          <img src="pngs/qroo.jpg" alt="QR-код" class="qr-image">
+        </div>
+
+        <p class="qr-or">или скажите код</p>
+        <p class="qr-code">080824</p>
+      </div>
+    </div>
+  </div>
+  <!-- END: modal for QR -->
+
+
+  <div class="container">
+    <div class="header">
+      <div class="title">
+        <img src="pngs/arrow.png" alt="" class="back-icon" />
+        <h1 class="text-title">Студенческий билет</h1>
+      </div>
+    </div>
+
+    <div id="doc" class="tab-content active">
+      <div class="middle">
+        <div class="img-upload">
+          <div id="upload-container">
+            <input type="file" id="idupload" accept="image/*" />
+            <label for="idupload" id="upload-label">Загрузить</label>
+            <div id="preview"></div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="btnfooter" id="docbtn">
+            <button id="btnftr1">
+              <img src="pngs/qr.png" alt="" class="qrbtn" />
+              Предъявить документ
+            </button>
+
+            <!-- Важно: id уникальный -->
+            <button id="shareDocBtn" class="share">
+              <img src="pngs/upload.png" alt="" class="uploadbtn" />
+              Отправить документ
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
