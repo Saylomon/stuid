@@ -460,7 +460,7 @@ h6 {
 #preview {
   margin: 0;
   width: 100%;
-  max-height: calc(100dvh - 220px);
+  max-height: calc(100dvh - 240px);
   overflow: hidden;
   position: relative;
   touch-action: none;
