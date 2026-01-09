@@ -238,7 +238,7 @@ h6 {
 }
 
 .btnfooter {
-  padding: 20px 17.5px 26px;
+  padding: 12px 16px 20px;
 }
 
 .btnfooter button {
@@ -287,8 +287,7 @@ h6 {
 }
 
 .footer {
-  position: sticky;
-  bottom: 0;
+  margin-top: auto;
   background: #fff;
   padding-bottom: env(safe-area-inset-bottom);
 }
