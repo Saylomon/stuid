@@ -456,16 +456,27 @@ h6 {
   text-align: center;
 }
 
-#preview {
+/* #preview {
   margin: 0;
   width: 100%;
   max-height: calc(100dvh - 220px);
   overflow: hidden;
   position: relative;
   touch-action: none;
+} */
+#preview {
+  width: 100%;
+  height: calc(100dvh - 200px);
+  /* экран минус header + кнопки */
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
 }
 
-#preview img {
+/* #preview img {
   width: 100%;
   height: auto;
   max-height: 100%;
@@ -475,6 +486,14 @@ h6 {
   margin: 0 auto;
   transition: transform 0.05s linear;
   will-change: transform;
+} */
+#preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* 🔥 ключевая строка */
+  object-position: center;
+  border-radius: 12px;
 }
 
 .back-link {
