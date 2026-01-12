@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const shareBtn = document.getElementById("shareDocBtn");
 
-    // ---- Image upload + localStorage (only if elements exist) ----
     let startDistance = 0;
     let currentScale = 1;
     let startX = 0;
@@ -63,66 +62,92 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Pinch zoom + pan (only if preview exists)
-    if (preview) {
-        preview.addEventListener(
-            "touchstart",
-            function (e) {
-                const img = preview.querySelector("img");
-                if (!img) return;
-
-                if (e.touches.length === 2) {
-                    startDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                    isPanning = false;
-                } else if (e.touches.length === 1 && currentScale > 1) {
-                    isPanning = true;
-                    startX = e.touches[0].clientX - currentX;
-                    startY = e.touches[0].clientY - currentY;
-                }
-            },
-            { passive: false }
-        );
-
-        preview.addEventListener(
-            "touchmove",
-            function (e) {
-                const img = preview.querySelector("img");
-                if (!img) return;
-
-                e.preventDefault();
-
-                if (e.touches.length === 2) {
-                    const newDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-
-                    const scaleChange = newDistance / startDistance;
-                    let newScale = currentScale * scaleChange;
-                    if (newScale < 1) newScale = 1;
-
-                    img.style.transform = `translate(${currentX}px, ${currentY}px) scale(${newScale})`;
-                } else if (e.touches.length === 1 && isPanning) {
-                    currentX = e.touches[0].clientX - startX;
-                    currentY = e.touches[0].clientY - startY;
-                    img.style.transform = `translate(${currentX}px, ${currentY}px) scale(${currentScale})`;
-                }
-            },
-            { passive: false }
-        );
-
-        preview.addEventListener("touchend", function () {
-            const img = preview.querySelector("img");
-            if (!img) return;
-
-            const style = window.getComputedStyle(img);
-            const matrix = new WebKitCSSMatrix(style.transform);
-            currentScale = Math.max(matrix.a, 1);
-        });
+    function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
     }
+
+    function applyTransform(img) {
+        // если масштаб вернулся к 1 — сбрасываем позицию
+        if (currentScale <= 1) {
+            currentScale = 1;
+            currentX = 0;
+            currentY = 0;
+        }
+
+        img.style.transform =
+            `translate(${currentX}px, ${currentY}px) scale(${currentScale})`;
+    }
+
+    preview.addEventListener("touchstart", (e) => {
+        const img = preview.querySelector("img");
+        if (!img) return;
+
+        if (e.touches.length === 2) {
+            startDistance = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            isPanning = false;
+        } else if (e.touches.length === 1 && currentScale > 1) {
+            isPanning = true;
+            startX = e.touches[0].clientX - currentX;
+            startY = e.touches[0].clientY - currentY;
+        }
+    }, { passive: false });
+
+    preview.addEventListener("touchmove", (e) => {
+        const img = preview.querySelector("img");
+        if (!img) return;
+
+        e.preventDefault();
+
+        // ---- PINCH ZOOM ----
+        if (e.touches.length === 2) {
+            const newDistance = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+
+            let newScale = currentScale * (newDistance / startDistance);
+            newScale = clamp(newScale, 1, 4); // max zoom
+
+            currentScale = newScale;
+            startDistance = newDistance;
+
+            applyTransform(img);
+        }
+
+        // ---- PAN ----
+        if (e.touches.length === 1 && isPanning && currentScale > 1) {
+            currentX = e.touches[0].clientX - startX;
+            currentY = e.touches[0].clientY - startY;
+
+            const maxX = (img.offsetWidth * currentScale - preview.offsetWidth) / 2;
+            const maxY = (img.offsetHeight * currentScale - preview.offsetHeight) / 2;
+
+            currentX = clamp(currentX, -maxX, maxX);
+            currentY = clamp(currentY, -maxY, maxY);
+
+            applyTransform(img);
+        }
+    }, { passive: false });
+
+    preview.addEventListener("touchend", (e) => {
+        const img = preview.querySelector("img");
+        if (!img) return;
+
+        if (e.touches.length === 0) {
+            isPanning = false;
+
+            if (currentScale < 1.05) {
+                currentScale = 1;
+                currentX = 0;
+                currentY = 0;
+                applyTransform(img);
+            }
+        }
+    });
+
 
     // ---- QR modal (button "Предъявить") ----
     function openModal() {
